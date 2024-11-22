@@ -48,7 +48,7 @@ class PerevalSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     coords = CoordSerializer()
     level = LevelSerializer()
-    image = ImageSerializer()
+    image = ImageSerializer(many=True)
     add_time = serializers.DateTimeField(read_only=True)
 
     class Meta:
@@ -67,27 +67,24 @@ class PerevalSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        user_data = validated_data.pop('user')
-        coords_data = validated_data.pop('coords')
-        level_data = validated_data.pop('level')
-        image_data = validated_data.pop('image', [])
+        user = validated_data.pop('user')
+        coords = validated_data.pop('coords')
+        level = validated_data.pop('level')
+        image = validated_data.pop('image')
 
-        user_instance = User.objects.create(**user_data)
-        coords_instance = Coordinate.objects.create(**coords_data)
-        level_instance = Level.objects.create(**level_data)
+        user_instance = User.objects.create(**user)
+        coords_instance = Coordinate.objects.create(**coords)
+        level_instance = Level.objects.create(**level)
+        pereval = Pereval.objects.create(**validated_data, user=user, coords=coords, level=level)
 
-        pereval_instance = Pereval.objects.create(
-            user=user_instance,
-            coords=coords_instance,
-            level=level_instance,
-            **validated_data
-        )
-        
-        if image_data:
-            images = [Image.objects.create(**img_data) for img_data in image_data]
-            pereval_instance.image.set(images)
 
-        return pereval_instance
+        for i in image:
+            image = i.pop('image')
+            title = i.pop('title')
+            Image.objects.create(title=title, image=image, pereval=pereval)
+        return pereval
+
+
 
     def validate(self, data):
         if self.instance is not None:
