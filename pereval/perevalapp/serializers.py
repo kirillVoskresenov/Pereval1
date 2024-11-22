@@ -70,25 +70,22 @@ class PerevalSerializer(serializers.ModelSerializer):
         user_data = validated_data.pop('user')
         coords_data = validated_data.pop('coords')
         level_data = validated_data.pop('level')
-        image_data = validated_data.pop('image')
+        image_data = validated_data.pop('image', [])
 
         user_instance = User.objects.create(**user_data)
         coords_instance = Coordinate.objects.create(**coords_data)
         level_instance = Level.objects.create(**level_data)
-        image_instance = Image.objects.create(**image_data)
 
         pereval_instance = Pereval.objects.create(
             user=user_instance,
             coords=coords_instance,
             level=level_instance,
-            image=image_instance,
             **validated_data
         )
-
+        
         if image_data:
-            for img_data in image_data:
-                image_instance = Image.objects.create(**img_data)
-                pereval_instance.image.add(image_instance)
+            images = [Image.objects.create(**img_data) for img_data in image_data]
+            pereval_instance.image.set(images)
 
         return pereval_instance
 
