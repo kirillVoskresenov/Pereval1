@@ -75,7 +75,7 @@ class PerevalSerializer(serializers.ModelSerializer):
         user_instance = User.objects.create(**user)
         coords_instance = Coordinate.objects.create(**coords)
         level_instance = Level.objects.create(**level)
-        pereval = Pereval.objects.create(**validated_data, user=user, coords=coords, level=level)
+        pereval = Pereval.objects.create(**validated_data, user=user_instance, coords=coords_instance, level=level_instance)
 
 
         for i in image:
