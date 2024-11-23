@@ -56,7 +56,7 @@ class Pereval(models.Model):
     coords = models.ForeignKey(Coordinate, on_delete=models.CASCADE)
     level = models.ForeignKey(Level, on_delete=models.CASCADE)
     image = models.ManyToManyField(Image)
-    status = models.CharField(max_length=255, choices=(
+    status = models.CharField(max_length=255, default='new', choices=(
         ('new', 'New'),
         ('pending', 'Pending'),
         ('accepted', 'Accepted'),
