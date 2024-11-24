@@ -1,8 +1,8 @@
-from django.shortcuts import render
 from rest_framework import generics
 from .models import Level, Image, User, Coordinate, Pereval
 from .serializers import ImageSerializer, CoordSerializer, UserSerializer, LevelSerializer,PerevalSerializer
-
+from rest_framework.response import Response
+from rest_framework.views import status
 
 class UserAPIView(generics.ListAPIView):
     queryset = User.objects.all()
@@ -27,3 +27,8 @@ class ImageAPIView(generics.ListAPIView):
 class PerevalAPIView(generics.CreateAPIView, generics.ListAPIView):
     queryset = Pereval.objects.all()
     serializer_class = PerevalSerializer
+
+class PerevalDetailAPIView(generics.RetrieveAPIView):
+    queryset = Pereval.objects.all()
+    serializer_class = PerevalSerializer
+

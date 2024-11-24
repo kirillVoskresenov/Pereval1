@@ -18,10 +18,15 @@ from django.contrib import admin
 from django.urls import path, include
 from perevalapp.views import PerevalAPIView,ImageAPIView,UserAPIView,LevelAPIView,CoordinateAPIView
 from .yasg import urlpatterns as doc_urls
+from perevalapp.views import PerevalDetailAPIView
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/pereval', PerevalAPIView.as_view())
+    path('api/pereval', PerevalAPIView.as_view()),
+    path('api/pereval/<int:pk>/', PerevalDetailAPIView.as_view(), name='pereval-detail'),
+
 
 ]
 
