@@ -68,34 +68,20 @@ class PerevalSerializer(serializers.ModelSerializer):
             'status'
         )
 
-    def create(self, validated_data):
-        user_data = validated_data.pop('user')
-        coords_data = validated_data.pop('coords')
-        level_data = validated_data.pop('level')
-        image_data = validated_data.pop('image')
-
-        user_instance = User.objects.create(**user_data)
-        coords_instance = Coordinate.objects.create(**coords_data)
-        level_instance = Level.objects.create(**level_data)
-        pereval = Pereval.objects.create(**validated_data, user=user_instance, coords=coords_instance, level=level_instance)
-
-        for img_data in image_data:
-            title = img_data.pop('title')
-            image_file = img_data.pop('image')
-            Image.objects.create(pereval=pereval, title=title,
-                                 image=image_file)
-        return pereval
-
 
     def validate(self, data):
         if self.instance is not None:
             user_instance = self.instance.user
-            user_data = data.get('user')
-            if user_instance.surname == user_data.get('surname') \
-                or user_instance.name == user_data.get('name') \
-                or user_instance.patronymic == user_data.get('patronymic') \
-                or user_instance.phone_number == user_data.get('phone_number') \
-                or user_instance.email == user_data.get('email'):
-                return data
-            else:
+            user_data = data.get('user', {})
+            
+            if any([
+                user_instance.surname == user_data.get('surname'),
+                user_instance.name == user_data.get('name'),
+                user_instance.patronymic == user_data.get('patronymic'),
+                user_instance.phone_number == user_data.get('phone_number'),
+                user_instance.email == user_data.get('email')
+            ]):
                 raise serializers.ValidationError({'Изменения отклонены': 'Эти поля нельзя редактировать'})
+
+        return data
+
