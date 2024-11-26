@@ -72,10 +72,10 @@ class PerevalUpdateAPIView(generics.RetrieveUpdateDestroyAPIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
             serializer = PerevalSerializer(pereval, data=request.data,
-                                           partial=True)  # partial=True позволяет обновлять частично
+                                           partial=True) 
             if serializer.is_valid():
                 user_data = serializer.validated_data.get('user', {})
-                # Проверка на редактирование запрещенных полей
+               
                 if any(
                         field in user_data for field in ['surname', 'name', 'patronymic', 'email', 'phone_number']
                 ):
