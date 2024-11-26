@@ -87,21 +87,17 @@ class PerevalSerializer(serializers.ModelSerializer):
                                  image=image_file)
         return pereval
 
-    def patch(self, validated_data):
-        user_data = validated_data.pop('user')
-        coords_data = validated_data.pop('coords')
-        level_data = validated_data.pop('level')
-        image_data = validated_data.pop('image')
 
-        user_instance = User.objects.update(**user_data)
-        coords_instance = Coordinate.objects.update(**coords_data)
-        level_instance = Level.objects.update(**level_data)
-        pereval = Pereval.objects.update(**validated_data, user=user_instance, coords=coords_instance,
-                                         level=level_instance)
+    def validate(self, data):
+        if self.instance is not None:
+            user_instance = self.instance.user
+            user_data = data.get('user')
+            if user_instance.surname == user_data.get('surname') \
+                or user_instance.name == user_data.get('name') \
+                or user_instance.patronymic == user_data.get('patronymic') \
+                or user_instance.phone_number == user_data.get('phone_number') \
+                or user_instance.email == user_data.get('email'):
+                return data
+            else:
+                raise serializers.ValidationError({'Изменения отклонены': 'Эти поля нельзя редактировать'})
 
-        for img_data in image_data:
-            title = img_data.pop('title')
-            image_file = img_data.pop('image')
-            Image.objects.update(pereval=pereval, title=title,
-                                 image=image_file)
-        return pereval
