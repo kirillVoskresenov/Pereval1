@@ -40,17 +40,54 @@ class PerevalUpdateAPIView(generics.RetrieveUpdateDestroyAPIView):
 class PerevalViewset(viewsets.ModelViewSet):
     queryset = Pereval.objects.all()
     serializer_class = PerevalSerializer
-    filterset_fields = ('user__email',)
 
+    filterset_fields = ("user__email",)
 
-    def update(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
+        serializer = PerevalSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'status': status.HTTP_200_OK,
+                'message': None,
+                'id': serializer.data['id'],
+            })
+        elif status.HTTP_400_BAD_REQUEST:
+            return Response({
+                'status': status.HTTP_400_BAD_REQUEST,
+                'message': 'Bad Request',
+                'id': None,
+            })
+        elif status.HTTP_500_INTERNAL_SERVER_ERROR:
+            return Response({
+                'status': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'message': 'Ошибка подключения к базе данных',
+                'id': None,
+            })
+
+    def patch (self, request, *args, **kwargs):
         pereval = self.get_object()
-        if pereval.status == "new":
+        if pereval.status == 'New':
             serializer = PerevalSerializer(pereval, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response({"state": 1, "message": "Перевал успешно изменен"})
+                return Response({
+                    'state': 1,
+                    'message': 'Сохранения завершены успешно'
+                })
             else:
-                return Response({"state": 0, "message": serializer.errors})
+                return Response({
+                    'state': 0,
+                    'message': serializer.errors
+                })
         else:
-            return Response({"state": 0, "message": f"Причина: {pereval.get_status_display()}"})
+            return Response({
+                'state': 0,
+                'message': f"Отклонено. Причина: {pereval.get_status_display()}"
+            })
+
+
+class ImageViewset(viewsets.ModelViewSet):
+    queryset = Image.objects.all()
+    serializer_class = ImageSerializer
