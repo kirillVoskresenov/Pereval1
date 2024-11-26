@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Pereval, Coordinate, Image, User, Level
-
+from rest_framework.response import Response
+from rest_framework.views import status
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -86,25 +87,21 @@ class PerevalSerializer(serializers.ModelSerializer):
                                  image=image_file)
         return pereval
 
+    def patch(self, validated_data):
+        user_data = validated_data.pop('user')
+        coords_data = validated_data.pop('coords')
+        level_data = validated_data.pop('level')
+        image_data = validated_data.pop('image')
 
+        user_instance = User.objects.update(**user_data)
+        coords_instance = Coordinate.objects.update(**coords_data)
+        level_instance = Level.objects.update(**level_data)
+        pereval = Pereval.objects.update(**validated_data, user=user_instance, coords=coords_instance,
+                                         level=level_instance)
 
-    def validate(self, data):
-        if self.instance is not None:
-            if self.instance.status != 'NW':
-                raise serializers.ValidationError(
-                    f'Отказ! Причина: статус {self.instance.get_status_display()}'
-                )
-            user = self.instance.user
-            user_data = data.get('user', {})
-            user_fields = [
-                user.surname != user_data.get('surname'),
-                user.name != user_data.get('name'),
-                user.patronymic != user_data.get('patronymic'),
-                user.email != user_data.get('email'),
-                user.phone_number != user_data.get('phone_number'),
-            ]
-            if any(user_fields):
-                raise serializers.ValidationError(
-                    f'Отклонено! Нельзя менять данные пользователя'
-                )
-        return data
+        for img_data in image_data:
+            title = img_data.pop('title')
+            image_file = img_data.pop('image')
+            Image.objects.update(pereval=pereval, title=title,
+                                 image=image_file)
+        return pereval

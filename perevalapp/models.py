@@ -29,7 +29,7 @@ class User(models.Model):
     surname = models.CharField(max_length=255, verbose_name='Фамилия')
     patronymic = models.CharField(max_length=255, verbose_name='Отчество')
     phone_number = models.CharField(max_length=12, verbose_name='Телефон')
-    email = models.EmailField(max_length=255, unique=True)
+    email = models.EmailField(max_length=255)
 
     def __str__(self):
         return f'{self.surname} {self.name} {self.patronymic}'
@@ -57,17 +57,12 @@ class Pereval(models.Model):
         ('rejected', 'Rejected')
     ))
 
-    def create_pass(self, pass_data):
-        pass_object = self.create(**pass_data)
-        pass_object.status = "new"
-        pass_object.save()
-        return pass_object
 
 class Image(models.Model):
     data = models.CharField(max_length=255, verbose_name='Cсылка на изображение')
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, verbose_name=' Описание')
     pereval = models.ForeignKey(Pereval, on_delete=models.CASCADE,
-                                verbose_name='Изображения', related_name='image')
+                                verbose_name='Перевал', related_name='image')
 
     def __str__(self):
         return self.title
