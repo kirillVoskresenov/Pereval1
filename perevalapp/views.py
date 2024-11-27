@@ -1,4 +1,4 @@
-from rest_framework import generics, viewsets
+from rest_framework import generics, serializers
 from .models import Level, Image, User, Coordinate, Pereval
 from .serializers import ImageSerializer, CoordSerializer, UserSerializer, LevelSerializer,PerevalSerializer
 from rest_framework.response import Response
@@ -71,21 +71,13 @@ class PerevalUpdateAPIView(generics.RetrieveUpdateDestroyAPIView):
                 return Response({"state": 0, "message": "Запись не может быть изменена, так как не в статусе 'new'."},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-            serializer = PerevalSerializer(pereval, data=request.data,
-                                           partial=True)  # partial=True позволяет обновлять частично
-            if serializer.is_valid():
-                user_data = serializer.validated_data.get('user', {})
-                # Проверка на редактирование запрещенных полей
-                if any(
-                        field in user_data for field in ['surname', 'name', 'patronymic', 'email', 'phone_number']
-                ):
-                    return Response({"state": 0, "message": "Эти поля нельзя редактировать"},
-                                    status=status.HTTP_400_BAD_REQUEST)
+            serializer = PerevalSerializer(pereval, data=request.data, partial=True)
 
+            if serializer.is_valid():
                 serializer.save()
-                return Response({"state": 1, "message": "Запись успешно отредактирована."}, status=status.HTTP_200_OK)
-            return Response({"state": 0, "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.data)
+            else:
+                return Response({"state": 0, "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         except Pereval.DoesNotExist:
             return Response({"state": 0, "message": "Запись не найдена."}, status=status.HTTP_404_NOT_FOUND)
-
