@@ -120,3 +120,8 @@ class PerevalSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+class PerevalListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pereval
+        fields = '__all__'

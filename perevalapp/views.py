@@ -1,6 +1,7 @@
-from rest_framework import generics, serializers, viewsets
+from rest_framework import generics, serializers, filters
 from .models import Level, Image, User, Coordinate, Pereval
-from .serializers import ImageSerializer, CoordSerializer, UserSerializer, LevelSerializer, PerevalSerializer
+from .serializers import ImageSerializer, CoordSerializer, UserSerializer, LevelSerializer,\
+    PerevalSerializer, PerevalListSerializer
 from rest_framework.response import Response
 from rest_framework.views import status
 
@@ -84,3 +85,14 @@ class PerevalUpdateAPIView(generics.RetrieveUpdateDestroyAPIView):
         except Pereval.DoesNotExist:
             return Response({"state": 0, "message": "Запись не найдена."}, status=status.HTTP_404_NOT_FOUND)
 
+
+class PerevalListAPIView(generics.GenericAPIView):
+    serializer_class = PerevalListSerializer
+
+    def get(self, request):
+        email = request.query_params.get('user__email')
+        if email:
+            queryset = Pereval.objects.filter(user__email=email)
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"state": 0, "message": "Email не указан."}, status=status.HTTP_400_BAD_REQUEST)
