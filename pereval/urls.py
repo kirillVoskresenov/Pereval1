@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from perevalapp.views import PerevalAPIView,ImageAPIView,UserAPIView,LevelAPIView,\
-    CoordinateAPIView, PerevalDetailAPIView, PerevalUpdateAPIView, PerevalListAPIView
+    CoordinateAPIView, PerevalDetailAPIView, PerevalUpdateAPIView
 from .yasg import urlpatterns as doc_urls
 
 
@@ -26,7 +26,6 @@ from .yasg import urlpatterns as doc_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/pereval/', PerevalAPIView.as_view()),
-    path('api/pereval/', PerevalListAPIView.as_view(), name='pereval_list'),
     path('api/pereval/<int:pk>/', PerevalDetailAPIView.as_view(), name='pereval_detail'),
     path('api/pereval/update/<int:pk>/', PerevalUpdateAPIView.as_view(), name='pereval_update'),
 
