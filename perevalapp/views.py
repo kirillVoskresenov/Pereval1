@@ -1,12 +1,19 @@
+import django_filters
 from rest_framework import generics, serializers, filters, viewsets
 from .models import Level, Image, User, Coordinate, Pereval
 from .serializers import ImageSerializer, CoordSerializer, UserSerializer, LevelSerializer,\
     PerevalSerializer
 from rest_framework.response import Response
 from rest_framework.views import status
-from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as filters
 
 
+class PerevalFilter(filters.FilterSet):
+    user_email = filters.CharFilter(field_name='user__email', lookup_expr='exact')
+
+    class Meta:
+        model = Pereval
+        fields = ['user_email']
 
 class UserAPIView(generics.ListAPIView):
     queryset = User.objects.all()
@@ -31,7 +38,8 @@ class ImageAPIView(generics.ListAPIView):
 class PerevalAPIView(generics.CreateAPIView, generics.ListAPIView):
     queryset = Pereval.objects.all()
     serializer_class = PerevalSerializer
-    filterset_fields = ('user__email')
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = PerevalFilter
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
@@ -52,14 +60,14 @@ class PerevalAPIView(generics.CreateAPIView, generics.ListAPIView):
                                  image=image_file)
         return pereval
 
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     user_email = self.request.query_params.get('user__email')
-    #
-    #     if user_email:
-    #         queryset = queryset.filter(user__email=user_email)
-    #
-    #     return queryset
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user_email = self.request.query_params.get('user__email')
+
+        if user_email:
+            queryset = queryset.filter(user__email=user_email)
+
+        return queryset
 
 
 class PerevalDetailAPIView(generics.RetrieveAPIView):
