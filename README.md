@@ -130,11 +130,11 @@ summer_level (string): Уровень сложности для лета (нап
 
 autumn_level (string): Уровень сложности для осени (например, "1A").
 
-photo_img (object): Объект, содержащий информацию о фотографии:
+image (object): Объект, содержащий информацию о фотографии:
 
 title (string): Название фотографии (например, "Эльбрус").
 
-imgage (string($uri)): URL-адрес изображения (например, "http:example.jpg").
+data (string($uri)): URL-адрес изображения (например, "http:example.jpg").
 
 status (string): Статус объекта (например, "NW" - "новая запись"). Допустимые значения:
 
@@ -170,14 +170,14 @@ POST api/pereval/update/<int:pk>/
   "add_time": "2021-09-22 13:18:13",
   "user": {
     "email": "qwerty@mail.ru",
-    "fam": "Пупкин",
-    "name": "Василий",
-    "otc": "Иванович",
-    "phone": "+7 555 55 55"
+    "surname: "Иванов",
+    "name": "Иван",
+    "patronomic": "Иванович",
+    "phone_number": "+79992009574"
   },
   "coords": {
-    "latitude": "45.3842",
-    "longitude": "7.1525",
+    "length": "45.3842",
+    "width": "7.1525",
     "height": "1200"
   },
   "level": {
