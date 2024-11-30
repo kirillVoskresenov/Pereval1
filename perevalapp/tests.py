@@ -25,16 +25,15 @@ class PointAddModelTest(TestCase):
             level=self.level
         )
 
-        # Проверяем, что объект был создан
         self.assertIsInstance(pereval, Pereval)
         self.assertEqual(pereval.beauty_title, 'Пик Эльбруса')
         self.assertEqual(pereval.title, 'Эльбрус')
-        self.assertEqual(pereval.other_titles, 'Летом не сложно добраться')
-        self.assertEqual(pereval.connect, 'Остальное:')
+        self.assertEqual(pereval.other_titles, 'Красота')
+        self.assertEqual(pereval.connect, '')
         self.assertEqual(pereval.user, self.user)
         self.assertEqual(pereval.coords, self.coords)
         self.assertEqual(pereval.level, self.level)
-        self.assertEqual(pereval.status, Pereval.NEW)  # Проверка статуса по умолчанию
+        self.assertEqual(pereval.status, Pereval.NEW) 
 
     def test_title_unique_constraint(self):
         # Проверка уникальности поля title
@@ -50,9 +49,9 @@ class PointAddModelTest(TestCase):
         with self.assertRaises(Exception):
             Pereval.objects.create(
                 beauty_title='Пик Эльбруса-2',
-                title='Эльбрус',  # Дублируем уникальное значение
+                title='Эльбрус',  
                 other_titles='Другое описание',
-                connect='Другое остальное',
+                connect='',
                 coords=self.coords,
                 user=self.user,
                 level=self.level
@@ -63,7 +62,7 @@ class PointAddModelTest(TestCase):
             beauty_title='Пик Эльбруса',
             title='Эльбрус',
             other_titles='Красота',
-            connect='Остальное:',
+            connect='',
             coords=self.coords,
             user=self.user,
             level=self.level
@@ -73,19 +72,18 @@ class PointAddModelTest(TestCase):
                 beauty_title='Пик Эльбруса-3',
                 title='Другой Эльбрус',
                 other_titles='Красота',
-                connect='Другое остальное',
+                connect='',
                 coords=self.coords,
                 user=self.user,
                 level=self.level
             )
 
-    def test_status_choices(self):
-        # Проверка статусов
+    def test_status_choices(self):       
         point = Pereval.objects.create(
             beauty_title='Пик Эльбруса',
             title='Эльбрус',
             other_titles='Красота',
-            connect='Остальное:',
+            connect='',
             coords=self.coords,
             user=self.user,
             level=self.level
@@ -99,7 +97,7 @@ class PointAddModelTest(TestCase):
             beauty_title='Пик Эльбруса',
             title='Эльбрус',
             other_titles='Красота',
-            connect='Остальное:',
+            connect='',
             coords=self.coords,
             user=self.user,
             level=self.level
@@ -109,20 +107,20 @@ class PointAddModelTest(TestCase):
 
 
     def test_serializer_update_with_invalid_status(self):
-        self.point.status = 'AC'  # Устанавливаем статус, который не разрешает обновление
-        self.point.save()
+        self.perevl.status = 'AC'  # Устанавливаем статус, который не разрешает обновление
+        self.pereval.save()
         data = {
             'beauty_title': 'Пик Эльбруса',
             'title': 'Эльбрус',
-            'other_titles': 'Летом не сложно добраться',
-            'connect': 'Остальное:',
-            'coords': {'latitude': '5.80000000', 'longitude': '5.40000000', 'height': 10},
-            'user': {'full_name': 'Иванов Иван Иванович', 'email': 'e@example.com', 'phone': '89999999999'},
+            'other_titles': 'Красота',
+            'connect': '',
+            'coords': {'length': '5.80000000', 'width': '5.40000000', 'height': 10},
+            'user': {'surname='Иванов', name='Иван', patronymic='Иванович', 'email': 'e@example.com', 'phone': '89999999999'},
             'level': {'winter_level': '1A', 'spring_level': '1A', 'summer_level': '1A', 'autumn_level': '1A'},
 
         }
 
-        serializer = PerevalSerializer(instance=self.point, data=data)
+        serializer = PerevalSerializer(instance=self.pereval, data=data)
         with self.assertRaises(ValidationError):
             serializer.is_valid(raise_exception=True)
 
@@ -130,14 +128,14 @@ class PointAddModelTest(TestCase):
         data = {
             'beauty_title': 'Пик Эльбруса',
             'title': 'Эльбрус',
-            'other_titles': 'Летом не сложно добраться',
+            'other_titles': 'Красота',
             'connect': 'Остальное:',
-            'coords': {'latitude': '5.80000000', 'longitude': '5.40000000', 'height': 10},
-            'user': {'full_name': 'Иванов Иван Иванович', 'email': 'e@example.com', 'phone': '89999999999'},
+            'coords': {'length': '5.80000000', 'width': '5.40000000', 'height': 10},
+            'user': {'surname='Иванов', name='Иван', patronymic='Иванович', 'email': 'e@example.com', 'phone': '89999999999'},
             'level': {'winter_level': '1A', 'spring_level': '1A', 'summer_level': '1A', 'autumn_level': '1A'},
 
         }
 
-        serializer = PerevalSerializer(instance=self.point, data=data)
+        serializer = PerevalSerializer(instance=self.pereval, data=data)
         with self.assertRaises(ValidationError):
             serializer.is_valid(raise_exception=True)
